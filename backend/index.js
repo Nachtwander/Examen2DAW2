@@ -1,19 +1,23 @@
 const express = require('express');
+const cors = require('cors');
 const sequelize = require('./Conexion/Conexion');
 const Producto = require('./Modelos/Product');
 
 const app = express();
+
+app.use(cors()); 
 app.use(express.json());
 
-// Valor promedio de productos por segmento
-app.get('/valor-promedio-segmento', async (req, res) => {
+// Valor promedio de productos por segmento y categoría
+app.get('/valor-promedio-segmento-categoria', async (req, res) => {
     try {
         const resultado = await Producto.findAll({
             attributes: [
                 'productSegment_code',
+                'category_code',
                 [sequelize.fn('AVG', sequelize.col('value')), 'valor_promedio']
             ],
-            group: ['productSegment_code']
+            group: ['productSegment_code', 'category_code']  // Agrupar por segmento y categoría
         });
         res.json(resultado);
     } catch (error) {
